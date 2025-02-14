@@ -89,15 +89,17 @@ public class Rent {
 		bo.setConnection();
 		Statement stsi = this.bo.dbconn.createStatement();
 		ResultSet rs = stsi.executeQuery(si);
-		rs.next();
-		String userid = rs.getString("userid");
-		// 입력한 아이디가 데이터 내에 없으면 return 아니면 책 이름 입력 프로세스 실행
-		if(userid == null) {		
-			System.out.println("해당 아이디가 없습니다. 대출 프로세스를 종료합니다. ");
+
+		// 만약 rs 값이 null이면 프로세스 종료
+		if(rs == null) {
+			System.out.println("해당 아이디가 없습니다. 대출 프로세스를 종료합니다.");
 			rs.close();
+			stsi.close();
 			bo.disConnection();
 			return;
-		} 
+		}
+	
+		stsi.close();
 		rs.close();
 		bo.disConnection();
 		
@@ -105,7 +107,7 @@ public class Rent {
 		while(true) {
 			System.out.print("빌릴 책 이름을 입력하세요 : ");
 			title = sc.nextLine();
-			
+			if(t1.strTest(title) == false) {break;}
 			// 입력한 이름에 해당하는 책들의 리스트 출력
 			bo.setConnection();
 			// sopon -> SqlOfPrintOfName
@@ -126,25 +128,18 @@ public class Rent {
 			bo.disConnection();
 			
 			// 리스트들의 책들 중 원하는 책 선택
-			System.out.println("빌릴 책의 index번호를 입력하세요: ");
+			System.out.print("빌릴 책의 index번호를 입력하세요: ");
 			id = sc.nextLine();
 			if(t1.isNumber(id) == false) {return;}
 			index = Integer.parseInt(id);
 			
-			/*
-			 * insert into Rent(book_id) select isbn from Book where id = 5;
-			 * update Rent set member_id = (select userid from Member where pname = '짱구') 
-			 * where book_id = (select isbn from Book where id = 5);
-			 */
-			
-			String sar = "insert into Rent(book_id) select isbn from Book where id = " + index; // sar -> StringAddRent
-			String sur = "update Rent set member_id = '" + member_id + "' " 
-						 + "where book_id = (select isbn from Book where id = " + index + ")"; // sur -> StringUpdateRent
+			String sar = "insert into Rent set book_id = (select isbn from Book where id = " + index + "), "
+						 + "member_id = '" + member_id + "' ,"
+						 + "expirydate = date_add(current_timestamp(), INTERVAL 2 WEEK)"; // sar -> StringAddRent
 			
 			bo.setConnection();
 			Statement soa = this.bo.dbconn.createStatement(); // soa -> StatementOfAdd
 			soa.executeUpdate(sar); // sar SQL문 실행
-			soa.executeUpdate(sur); // sur SQL문 실행
 			
 			soa.close();
 			bo.disConnection();
