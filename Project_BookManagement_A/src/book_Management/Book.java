@@ -10,9 +10,9 @@ import java.util.Scanner;
 public class Book {
 	public Scanner s;  //정수형 스캐너 변수 
 	public Scanner s1; //문자열 스캐너 변수
-//	private Test t1; // 유효성 검사를 하기 위한 Test클래스를 불러오기 위한 변수 
+	private Test t1; // 유효성 검사를 하기 위한 Test클래스를 불러오기 위한 변수 
 	public Connection dbconn; // DB연결하기 위한 변수
-	private int id; // index
+	private int id; // book index
 	private String title; // 책 제목
 	private String isbn; // 책 일련번호
 	private int price; // 가격
@@ -24,8 +24,10 @@ public class Book {
 		this.s = new Scanner(System.in);
 		this.s1 = new Scanner(System.in);
 		this.dbconn = null;
+		this.t1 = new Test();
 	}
-		
+	
+	// 작업선택 하는 메서드	
 	public void control() {
 		 
 		while(true) {
@@ -35,15 +37,19 @@ public class Book {
 			if(str.equals("x") || str.equals("X")) break;
 			
 			switch(str) {
+			
 			// 입력값이 'c'이면 책 추가 메소드 실행
 			case "c", "C":
-				this.addBook(); break; 
+				this.addBook(); break;
+				
 			// 입력값이 'r'이면 책 리스트 보기 메소드 실행
 			case "r", "R":
 				this.printBook(); break;
+				
 			// 입력값이 'u'이면 책 자료 수정하기 메소드 실행
 			case "u", "U":
 				this.updateBook(); break;
+				
 			// 입력값이 'd'이면 책 폐기 메소드 실행
 			case "d", "D":
 				this.deleteBook(); break;
@@ -73,21 +79,26 @@ public class Book {
 			System.out.print("등록할 책의 제목을 입력해주세요 [''입력시 종료]: ");			
 			title = s1.nextLine();
 			if(title.equals("")) break;
+			
 			System.out.print("isbn을 입력해주세요 [''입력시 종료]: ");
-			if(title.equals("")) break;
 			isbn = s1.nextLine();
-			System.out.print("가격을 입력해주세요 [''입력시 종료]:");
-			if(title.equals("")) break;
+			if(isbn.equals("")) break;
+			
+			System.out.print("가격을 입력해주세요 ['0'입력시 종료]:");
 			price = s.nextInt();
+			if(price==0) break;
+			
 			System.out.print("출판사를 입력해주세요 [''입력시 종료]: ");
-			if(title.equals("")) break;
 			publisher = s1.nextLine();
-			System.out.print("출판연도를 입력해주세요 [''입력시 종료]: ");
-			if(title.equals("")) break;
+			if(publisher.equals("")) break;
+			
+			System.out.print("출판연도를 입력해주세요 ['0'입력시 종료]: ");
 			pubyear = s.nextInt();
+			if(pubyear==0) break;
+			
 			System.out.print("저자를 입력해주세요 [''입력시 종료]: ");
-			if(title.equals("")) break;
 			author = s1.nextLine();
+			if(author.equals("")) break;
 			
 			this.setConnection();
 			try {
@@ -114,7 +125,6 @@ public class Book {
 			if(str.equals("x") || str.equals("X")) break;
 			
 			switch(str) {
-			//
 			case "e", "E":
 				this.Everything(); break; 	// 책 리스트 전체를 보여주는 메서드 호출
 			case "t", "T":
