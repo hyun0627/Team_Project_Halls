@@ -69,7 +69,6 @@ public class Member {
 			String userid = st.nextLine();
 			
 			if(id != 0) {
-				bo.setConnection();
 				String ts = "select pname from Member where pname like '" + pname + "%' "
 												+ "or pname like '%" + pname + "' "
 												+ "or pname like '%" + pname + "%'";
@@ -82,7 +81,7 @@ public class Member {
 					break;
 				} 
 				rs.close();
-				bo.disConnection();
+				this.disConnection();
 			}	
 			
 			System.out.println("비밀번호를 입력하세요 ['   ':뒤로가기]");
@@ -202,7 +201,32 @@ public class Member {
 	
 	// 이름으로 검색한 Member 리스트 출력하는 메서드
 	public void nSearch() {
-		
+		while(true) {
+			System.out.print("찾으실 책의 제목을 입력해주세요[''입력시 종료]: ");
+			pname = st.nextLine();
+			if(t1.strTest(pname) == false) break;
+			
+			this.setConnection();
+			try {
+				Statement Nst = dbconn.createStatement();
+				String Nsql = "select id,pname,userid,gender,mobile,pw,created,updated"+
+							  " from Meber where pname='"+pname+"'";
+				ResultSet Nrs = Nst.executeQuery(Nsql);
+				
+				while(Nrs.next())
+				{
+					System.out.println("id:"+Nrs.getInt("id")+" 이름:"+Nrs.getString("pname")+" uesrid:"+Nrs.getString("uesrid")
+									 +" 성별:"+Nrs.getInt("gender")+" 모바일:"+Nrs.getString("mobile")
+									 +" 비밀번호:"+Nrs.getInt("pubyear")
+									 +" / 등록시일:"+Nrs.getTimestamp("created")+" _수정시일:"+Nrs.getTimestamp("updated"));
+				}
+				Nrs.close(); 
+				Nst.close();
+			}catch(SQLException e) {
+				System.out.println(e.getMessage());
+			}
+			this.disConnection();		
+		}
 	}
 	
 	// id로 검색한 Member 리스트 출력하는 메서드

@@ -8,7 +8,7 @@ public class Main {
 		Scanner s = new Scanner(System.in);
 	
 		Book bo = new Book();
-		
+		Member mem = new Member();
 		while(true) {
 			System.out.print("작업 선택 [b:book, m:member, r:rent, x:종료] : ");
 			String ins = s.nextLine();
@@ -19,7 +19,7 @@ public class Main {
 			case "b", "B":
 				bo.control();
 				break;
-			case "m", "M":
+			case "m", "M":			
 				break;
 			case "r", "R":	
 					break;
