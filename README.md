@@ -72,3 +72,21 @@ Book 테이블 추가 사항
   - 출력(R:Read), printMember() : userid를 입력받아 그 아이디에 해당하는 사람 출력
   - 수정(U:Update), updateMember() : userid를 입력받아 그 아이디에 해당하는 사람의 정보를 수정
   - 삭제(D:Delete), deleteMember() : userid를 입력받아 그 아이디에 해당하는 사람의 정보를 삭제
+================================================================================================================================================================================================================
+추가) 유효성 검사 메소드 사용 방법
+Test클래스의 생성자 => t1이라는 가정 하에
+-> Test t1 = new Test(); << 요렇게 선언 및 초기화 했다는 가정 하에
+- Test클래스의 두개의 메소드 존재
+- 1. String 유효성 검사 메소드 - strTest()
+   - 사용방법: 입력값을 저장하는 변수 -> str / 스캐너 변수 -> sc
+     1. System.out.println("값을 입력하시오");
+     2. str = sc.nextLine();
+     3. if(t1.strTest(str) == false) { break; or return; } << 만약 입력된 값이 null이거나 빈칸이면 break or return true면 계속 프로그램 진행
+        
+  2. Int 유효성 검사 메소드 - isNumber()
+     - 사용방법: 입력값을 저장하는 변수: str, int값으로 변환해 저장할 변수 i, 스캐너 변수 sc
+       1. System.out.println("값을 입력하시오");
+       2. str = sc.nextLine();
+       3. if(t1.isNumber(str) == false) { break; or return; }
+       4. i = Integer.parseInt(str); << 만약 위에서 한 유효성 검사의 결과가 true면 int로 형변환해 저장
+     
