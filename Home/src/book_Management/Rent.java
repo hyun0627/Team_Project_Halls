@@ -19,6 +19,7 @@ public class Rent {
 	private String id; // id값을 저장하기 전에 유효성 검사를 진행하기 위해 id값을 임시로 저장해놓을 변수
 	private String title; // 책 이름을 입력받기 위한 변수
 	private String member_id; // member_id(userid)
+	private String book_id;
 	private int qty; // 수량
 	private String sqty;
 	private String pw; // pw
@@ -274,44 +275,50 @@ public class Rent {
 			test.close();
 			bo.disConnection();
 			
-			// 일괄 반납 기능시작
-			System.out.print("일괄반납 하시겠습니까? : "); 
-			str = sc.nextLine();
-			if(t1.strTest(str) == false) {return;} 
-			
-			// 일괄 반납 구현 시작
-			if(str.equals("dd") || str.equals("ㅇㅇ") || str.equals("네")) {
+			while(true) {
 				
-				// delete from Rent where member_id = 'id1';
-				String bx = "update Rent set expirydate = date_add(expirydate, INTERVAL 2 WEEK) where member_id = '" + member_id + "' ";
-				bo.setConnection();
-				Statement sbx = this.bo.dbconn.createStatement(); // sbx -> StatementBulkExtension
-				sbx.executeUpdate(bx);
-				
-				sbx.close();
-				bo.disConnection();
-				
-				// 한권만 연장하는 경우
-			} else {
-				
-				// 출력한 책들 중 어떤 책을 연장할건지 선택(선택은 id로)
-				System.out.print("연장할 책의 번호를 입력하세요: ");
+				System.out.print("반납할 책의 번호를 입력하세요: ");
 				id = sc.nextLine();
-				if(t1.isNumber(id) == false) {return;}
+				if(t1.isNumber(id) == false) { break;}
 				index = Integer.parseInt(id);
 				
-				// update Rent set expirydate = date_add(expirydate, INTERVAL 2 WEEK) where id = 1;
-				String ud = "update Rent set expirydate = date_add(expirydate, INTERVAL 2 WEEK) where id = " + id;
+				/*
+				 *  1.번호에 해당하는 책의 수량과 isbn번호를 가지고 온다
+				 *  2. 그 번호에 해당하는 데이터를 삭제한다
+				 *  3. 입력받은 isbn번호로 책을 찾고 그 책의 수량을 추가한다.
+				 */
+				
+				// 1번문 실행
+				String getQAI = "select qty, book_id from Rent where id = " + id; // getQAI -> get Qty And book_Id
 				bo.setConnection();
-				Statement sud = this.bo.dbconn.createStatement();
-				sud.executeUpdate(ud);
+				Statement sqai = this.bo.dbconn.createStatement(); // sqai -> Statement Qty And book_Id
+				ResultSet rqai = sqai.executeQuery(getQAI); // rqai -> ResultSet Qty And book_id
+				 
+				rqai.next();
+				qty = rqai.getInt("qty");
+				book_id = rqai.getString("book_id");
 				
-				sud.close();
-				bo.disConnection();
+				rqai.close();
+				sqai.close();
+				bo.disConnection(); // 1번 끝
 				
-			} // if-else문 종료
+				// 2번 및 3번문 실행
+				String rb = "delete from Rent where id = " + id; // rb -> Return Book
+				String rq = "update Book set qty = " + qty + " where isbn = '" + book_id + "' "; // rq -> Return Qty
+				
+				bo.setConnection();
+				Statement sr = this.bo.dbconn.createStatement();
+				sr.executeUpdate(rb);
+				sr.executeUpdate(rq);
+				
+				sr.close();
+				bo.disConnection(); // 2번 및 3번문 끝
+				
+			} // while문
 			
-		} // 대출 연장 할건지 안할건지 물어보는 if문 종료
+			
+		} // 전체 if문
+		
 	}
 	
 	// 책 대출 내역 출력 메소드
