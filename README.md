@@ -15,27 +15,27 @@
     - Rent 테이블 생성자: re ex) Rent re = new Rent();
 
 다같이 맞추어야 할 것:
-1.클래스 안에서 선언해야 하는 변수의 종류
-1-1. Book클래스나, Member클래스, Test클래스
-- Book클래스 -> bo
-- Member클래스 -> mem
-- Test클래스 -> t1
-1-2. 스캐너
-1-3. 메소드에서 여러번 쓰는 변수 같은 경우
-ex) Book클래스
-- id, title, isbn, price,..., 등등
+  - 1.클래스 안에서 선언해야 하는 변수의 종류
+    1-1. Book클래스나, Member클래스, Test클래스
+	 - Book클래스 -> bo
+	 - Member클래스 -> mem
+	 - Test클래스 -> t1
+    1-2. 스캐너
+    1-3. 메소드에서 여러번 쓰는 변수 같은 경우
+	 ex) Book클래스
+	 - id, title, isbn, price,..., 등등
 
-2. 띄워쓰기나 enter 같은 경우
-- 처음과 끝에 한줄씩 enter 해야함
-  ex) pulic void run() {
+    2. 띄워쓰기나 enter 같은 경우
+    - 처음과 끝에 한줄씩 enter 해야함
+      ex) pulic void run() {
 	        (빈줄)	
 	        sysout
 	        (빈줄)
         }
   
-- 코드가 길어진다 싶으면 구분하기 쉽도록 한번씩 enter치기
-- 들여쓰기 확실히 해야함
-  ex) 처음엔터는 tab 2번 그다음 엔터는 tab 4번 이런식으로
+    - 코드가 길어진다 싶으면 구분하기 쉽도록 한번씩 enter치기
+    - 들여쓰기 확실히 해야함
+      ex) 처음엔터는 tab 2번 그다음 엔터는 tab 4번 이런식으로
 
 1. 테이블 내용
  1-1. Book 테이블(테이블 내용 왠만하면 건들지 마세요)
