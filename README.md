@@ -29,7 +29,9 @@
 	 - id, title, isbn, price,..., 등등
 
     2. 띄워쓰기나 enter 같은 경우
+       
     - 처음과 끝에 한줄씩 enter 해야함
+      
       ex) pulic void run() {
 	        (빈줄)	
 	        sysout
@@ -37,6 +39,7 @@
         }
   
     - 코드가 길어진다 싶으면 구분하기 쉽도록 한번씩 enter치기
+      
     - 들여쓰기 확실히 해야함
       ex) 처음엔터는 tab 2번 그다음 엔터는 tab 4번 이런식으로
 
