@@ -95,18 +95,18 @@ public void addMemeber() {
 	if(gender.equals(""))break;
 	System.out.println("모바일번호를 입력하세요 ex)010-1234-5678   ['   ':뒤로가기]");
 	String mobile = s1.nextLine();
+	if(mobile.equals(""))break;
 	//mobile에 입력한 값이 테이블 Member에 일치한 값이 있는지 검색
-	if(t1.strTest(mobile))break;
 		String t = "select mobile from Member where mobile like '" + mobile + "%' "
-										+ "or pname like '%" + mobile + "' "
-										+ "or pname like '%" + mobile + "%'";
+											   + "or pname like '%" + mobile + "' "
+											   + "or pname like '%" + mobile + "%'";
 		this.setConnection();
 		try {
 			Statement Mobile = this.dbconn.createStatement();
-			ResultSet Mo = Mobile.executeQuery(ts);
+			ResultSet Mo = Mobile.executeQuery(t);
 			//mobile에 입력한 값에 일치한게 있으면 아래 문장 실행하고 빠져나가기
 			if(Mo.next()) {
-				System.out.println("똑같은 모바일 번호가 존재합니다. 처음부터 다시 하십시오.");
+				System.out.println("똑같은 모바일 번호가 존재합니다. 처음부터 다시 하십시오.\n");
 				break;
 			}
 			Mo.close();
