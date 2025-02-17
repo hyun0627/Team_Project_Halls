@@ -8,10 +8,13 @@ import java.sql.Statement;
 import java.util.Scanner;
 
 public class Member {
-	private Test t1 = new Test();
+	private Test t1;
 	public Connection dbconn;
+	Scanner sc;
 	Member(){
 		this.dbconn = null;
+		t1 = new Test();
+		sc = new Scanner(System.in);
 	}
 	public void setConnection() {
 		String dbDriver = "com.mysql.cj.jdbc.Driver";
@@ -40,11 +43,11 @@ public void disConnection() {
 }
 //실행메소드
 public void control() {
-	Scanner s = new Scanner(System.in);
+	sc = new Scanner(System.in);
 	
 	while(true) {
 		System.out.println("작업관리[c:멤버추가,r:멤버출력,u:멤버수정,d:멤버삭제,x:뒤로가기]");
-		String ins = s.nextLine();
+		String ins = sc.nextLine();
 		
 		if(ins.equals("x")||ins.equals("X"))break;
 		switch(ins) {
@@ -65,13 +68,13 @@ public void control() {
 	}
 //멤버추가 메소드
 public void addMemeber() {
-	Scanner s1 = new Scanner(System.in);
+	sc = new Scanner(System.in);
 	while(true) {
 	System.out.println("이름을 입력하세요   ['   ':뒤로가기]");
-	String name = s1.nextLine();
+	String name = sc.nextLine();
 	if(name.equals("")) break;
 	System.out.println("유저 아이디를 입력하세요   ['  ':뒤로가기]");
-	String userid = s1.nextLine();
+	String userid = sc.nextLine();
 		//userid에 입력한값이 멤버에 일치하는게 있는지 검색
 		String ts = "select userid from Member where userid like '" + userid + "%' "
 										+ "or pname like '%" + userid + "' "
@@ -82,7 +85,7 @@ public void addMemeber() {
 		ResultSet rs = test.executeQuery(ts);
 		//userid에 입력한값이 일치한게 있으면 아래 문장 실행하고 빠져나가기
 		if(rs.next()) {		
-			System.out.println("똑같은 아이디가 존재합니다. 처음부터 다시 하십시오.");
+			System.out.println("똑같은 아이디가 존재합니다. 처음부터 다시 하십시오.\n");
 			break;
 			}
 		rs.close();
@@ -91,10 +94,10 @@ public void addMemeber() {
 			System.out.println(e.getMessage());
 		}
 	System.out.println("성별을 입력하세요   ['   ':뒤로가기]");
-	String gender = s1.nextLine();
+	String gender = sc.nextLine();
 	if(gender.equals(""))break;
 	System.out.println("모바일번호를 입력하세요 ex)010-1234-5678   ['   ':뒤로가기]");
-	String mobile = s1.nextLine();
+	String mobile = sc.nextLine();
 	if(mobile.equals(""))break;
 	//mobile에 입력한 값이 테이블 Member에 일치한 값이 있는지 검색
 		String t = "select mobile from Member where mobile like '" + mobile + "%' "
@@ -115,7 +118,7 @@ public void addMemeber() {
 				System.out.println(e.getMessage());
 			}
 	System.out.println("비밀번호를 입력하세요 ['   ':뒤로가기]");
-	String pw = s1.nextLine();
+	String pw = sc.nextLine();
 	if(pw.equals(""))break;
 	//입력한 값을 데이터 베이스에 저장
 	String sql = "insert into member set pname='"+name+"',userid='"+userid+
@@ -134,16 +137,16 @@ public void addMemeber() {
 	}
 //멤버 출력 메소드
 public void printMember() {
-	Scanner s1 = new Scanner(System.in);
+	sc = new Scanner(System.in);
 	
 	while(true) {
 		System.out.println("멤버를 찾는 방법를 고르시오.  ex)이름,유저 아이디,모바일번호  ['  ':뒤로가기]");
-		String a =s1.nextLine();
+		String a =sc.nextLine();
 		if(a.equals(""))break;
-		//이름으로 검색할떄 실행 메소드
+		//이름으로 검색할때 실행 메소드
 		if(a.equals("이름")) {
 			System.out.println("찾고 싶은 이름을 입력하시오.");
-			a = s1.nextLine();
+			a = sc.nextLine();
 	this.setConnection();
 	try {
 		//이름을 쳤을때 나오는 동명이인 검색
@@ -163,7 +166,7 @@ public void printMember() {
 	// 유저아이디로 검색할떄 실행 메소드
 	if(a.equals("유저아이디")||a.equals("유저 아이디")) {
 			System.out.println("찾고 싶은 이름을 입력하시오.");
-			a = s1.nextLine();
+			a = sc.nextLine();
 	this.setConnection();
 	try {
 		//유저 아이디을 쳤을때 나오는 동명이인 검색
@@ -184,7 +187,7 @@ public void printMember() {
 		}
 	if(a.equals("모바일번호")||a.equals("모바일 번호")||a.equals("모바일")||a.equals("번호")) {
 			System.out.println("찾고 싶은 이름을 입력하시오.");
-			a = s1.nextLine();//찾고 싶은 이름 검색
+			a = sc.nextLine();//찾고 싶은 이름 검색
 	this.setConnection();
 	try {
 		//이름을 쳤을때 나오는 동명이인 목록 검색
@@ -205,15 +208,15 @@ public void printMember() {
 }
 //멤버 수정
 public void updateMember() {
-	Scanner s1 = new Scanner(System.in);
+	sc = new Scanner(System.in);
 	while(true) {
 		System.out.println("수정하고 싶은  멤버를 찾는 방법를 고르시오.  ex)이름,유저 아이디,모바일번호  ['  ':뒤로가기]");
-		String a =s1.nextLine();//이름,유저,아이디,모바일번호 입력
+		String a =sc.nextLine();//이름,유저,아이디,모바일번호 입력
 		if(a.equals(""))break;
 		//찾는 방법이 이름일때 실행메소드
 		if(a.equals("이름")) {
 			System.out.println("찾고 싶은 멤버의 이름의 입력하시오.");
-			String b = s1.nextLine();//찾고 싶은 멤버 이름 검색
+			String b = sc.nextLine();//찾고 싶은 멤버 이름 검색
 			this.setConnection();
 			try {
 				//이름을 쳤을때 나오는 동명이인 검색
@@ -232,19 +235,31 @@ public void updateMember() {
 			}
 				//멤버 수정 메소드
 			System.out.println("수정하고 싶은 멤버의 유저 아이디를 입력하시오.");
-			String id = s1.nextLine();
+			String id = sc.nextLine();
 			if(id.equals(""))break;
 			System.out.println("이름을 입력하시오.   ['   ':뒤로가기]");
-			String updateName = s1.nextLine();
+			String updateName = sc.nextLine();
 			if(updateName.equals(""))break;
 			System.out.println("성별을 입력하시오.   ['   ':뒤로가기]");
-			String updateGender = s1.nextLine();
+			String updateGender = sc.nextLine();
 			if(updateGender.equals(""))break;
 			System.out.println("모바일 번호를 입력하시오.  ex)010-1234-5678 ['   ':뒤로가기]");
-			String updateMobile = s1.nextLine();
+			String updateMobile = sc.nextLine();
 			if(updateMobile.equals(""))break;
+			String t = "select mobile from Member where mobile like '" + updateMobile + "%' "
+								   + "or pname like '%" + updateMobile + "' "
+								   + "or pname like '%" + updateMobile + "%'";
+			this.setConnection();
+			try {
+			Statement Mobile = this.dbconn.createStatement();
+			ResultSet Mo = Mobile.executeQuery(t);
+			if(Mo.next()) {
+			System.out.println("똑같은 모바일 번호가 존재합니다. 처음부터 다시 하십시오.\n");
+			break;}		Mo.close();}
+			catch(SQLException e) {
+			System.out.println(e.getMessage());}
 			System.out.println("비밀번호를 입력하시오.   ['   ':뒤로가기]");
-			String updatePw = s1.nextLine();
+			String updatePw = sc.nextLine();
 			if(updatePw.equals(""))break;
 			this.setConnection();
 			try {
@@ -262,7 +277,7 @@ public void updateMember() {
 	//찾는 방법이 유저아이디 일 때 실행메소드
 		if(a.equals("유저아이디")||a.equals("유저 아이디")||a.equals("아이디")) {
 			System.out.println("찾고 싶은 멤버의 이름의 입력하시오.");
-			String b = s1.nextLine();//찾고 싶은 멤버 이름 검색
+			String b = sc.nextLine();//찾고 싶은 멤버 이름 검색
 			String userid = "select pname,userid,gender,mobile,pw,created,updated from member where userid='"+b+"'";
 			this.setConnection();
 			try {
@@ -280,19 +295,31 @@ public void updateMember() {
 			} 
 				//멤버 수정 메소드
 			System.out.println("수정하고 싶은 멤버의 유저 아이디를 입력하시오.");
-			String id = s1.nextLine();
+			String id = sc.nextLine();
 			if(id.equals(""))break;
 			System.out.println("이름을 입력하시오.   ['   ':뒤로가기]");
-			String updateName = s1.nextLine(); 
+			String updateName = sc.nextLine(); 
 			if(updateName.equals(""))break;
 			System.out.println("성별을 입력하시오.   ['   ':뒤로가기]");
-			String updateGender = s1.nextLine();
+			String updateGender = sc.nextLine();
 			if(updateGender.equals(""))break;
 			System.out.println("모바일 번호를 입력하시오.  ex)010-1234-5678 ['   ':뒤로가기]");
-			String updateMobile = s1.nextLine();
+			String updateMobile = sc.nextLine();
 			if(updateMobile.equals(""))break;
+			String t = "select mobile from Member where mobile like '" + updateMobile + "%' "
+												   + "or pname like '%" + updateMobile + "' "
+												   + "or pname like '%" + updateMobile + "%'";
+			this.setConnection();
+			try {
+			Statement Mobile = this.dbconn.createStatement();
+			ResultSet Mo = Mobile.executeQuery(t);
+			if(Mo.next()) {
+			System.out.println("똑같은 모바일 번호가 존재합니다. 처음부터 다시 하십시오.\n");
+			break;}		Mo.close();}
+			catch(SQLException e) {
+			System.out.println(e.getMessage());}
 			System.out.println("비밀번호를 입력하시오.   ['   ':뒤로가기]");
-			String updatePw = s1.nextLine();
+			String updatePw = sc.nextLine();
 			if(updatePw.equals(""))break;
 			this.setConnection();
 			try{
@@ -310,7 +337,7 @@ public void updateMember() {
 	//찾는 방법이 모바일번호일때 실행메소드
 		if(a.equals("모바일번호")||a.equals("모바일 번호")) {
 			System.out.println("찾고 싶은 멤버의 모바일 번호 입력하시오.");
-			String b = s1.nextLine();
+			String b = sc.nextLine();
 			this.setConnection();
 			try {
 				//데이터 베이스에 멤버 검색
@@ -329,19 +356,31 @@ public void updateMember() {
 			}
 				//멤버 수정 메소드
 			System.out.println("수정하고 싶은 멤버의 유저 아이디를 입력하시오.");
-			String id = s1.nextLine();
+			String id = sc.nextLine();
 			if(id.equals(""))break;
 			System.out.println("이름을 입력하시오.   ['   ':뒤로가기]");
-			String updateName = s1.nextLine();
+			String updateName = sc.nextLine();
 			if(updateName.equals(""))break;
 			System.out.println("성별을 입력하시오.   ['   ':뒤로가기]");
-			String updateGender = s1.nextLine();
+			String updateGender = sc.nextLine();
 			if(updateGender.equals(""))break;
 			System.out.println("모바일 번호를 입력하시오.  ex)010-1234-5678 ['   ':뒤로가기]");
-			String updateMobile = s1.nextLine();
+			String updateMobile = sc.nextLine();
 			if(updateMobile.equals(""))break;
+			String t = "select mobile from Member where mobile like '" + updateMobile + "%' "
+												   + "or pname like '%" + updateMobile + "' "
+												   + "or pname like '%" + updateMobile + "%'";
+			this.setConnection();
+			try {
+			Statement Mobile = this.dbconn.createStatement();
+			ResultSet Mo = Mobile.executeQuery(t);
+			if(Mo.next()) {
+			System.out.println("똑같은 모바일 번호가 존재합니다. 처음부터 다시 하십시오.\n");
+			break;}		Mo.close();}
+			catch(SQLException e) {
+			System.out.println(e.getMessage());}
 			System.out.println("비밀번호를 입력하시오.   ['   ':뒤로가기]");
-			String updatePw = s1.nextLine();
+			String updatePw = sc.nextLine();
 			if(updatePw.equals(""))break;
 			this.setConnection();
 			try {
@@ -358,15 +397,15 @@ public void updateMember() {
 }}}
 //멤버 삭제 메소드
 public void deleteMember() {
-	Scanner s1 = new Scanner(System.in); 
+	Scanner sc = new Scanner(System.in); 
 	while(true) {
 	//멤버 찾는 메소드
 		System.out.println("삭제하고 싶은 멤버찾기   ex)이름,유저아이디,모바일번호 ['  ':뒤로가기]");
-		String a= s1.nextLine();
+		String a= sc.nextLine();
 		if(a.equals(""))break;
 		if(a.equals("이름")) {
 			System.out.println("찾고있는 멤버 이름입력");
-			a=s1.nextLine();
+			a=sc.nextLine();
 			this.setConnection();
 			try {
 				//이름에 해당하는 멤버 검색
@@ -385,7 +424,7 @@ public void deleteMember() {
 			}
 			//삭제하고 싶은 멤버의 아이디입력
 			System.out.println("삭제하고 싶은 멤버의 유저 아이디 입력");
-			a=s1.nextLine();
+			a=sc.nextLine();
 			this.setConnection();
 			try {
 				//삭제
@@ -401,7 +440,7 @@ public void deleteMember() {
 	//찾는 방법이 유저아이디일때 실행 메소드
 		if(a.equals("유저아이디")||a.equals("유저 아이디")) {
 			System.out.println("찾고있는 멤버의 유저아이디 입력");
-			a = s1.nextLine(); //멤버의 유저아이디입력
+			a = sc.nextLine(); //멤버의 유저아이디입력
 			this.setConnection();
 			try {
 				//입력한 유저아이디에 해당하는 멤버 검색
@@ -419,7 +458,7 @@ public void deleteMember() {
 				System.out.println((e.getMessage()));
 			}
 			System.out.println("삭제하고 싶은 멤버의 유저 아이디 입력");
-			a=s1.nextLine(); //삭제하고싶은 멤버의 유저아이디 입력
+			a=sc.nextLine(); //삭제하고싶은 멤버의 유저아이디 입력
 			//삭제 메소드
 			this.setConnection();
 			try {
@@ -436,7 +475,7 @@ public void deleteMember() {
 	//찾는 방법이 모바일 번호일떄 실행 메소드
 		if(a.equals("모바일번호")||a.equals("모바일 번호")) {
 			System.out.println("찾고 있는 멤버의 모바일 번호 입력");
-			a = s1.nextLine(); //찾고 있는 멤버의 모바일 번호 입력
+			a = sc.nextLine(); //찾고 있는 멤버의 모바일 번호 입력
 			this.setConnection();
 			try {
 				//입력한 모바일 번호에 해당하는 멤버 검색
@@ -454,7 +493,7 @@ public void deleteMember() {
 				System.out.println((e.getMessage()));
 			}
 			System.out.println("삭제하고 싶은 멤버의 유저 아이디 입력");
-			a=s1.nextLine();//삭제하고 싶은 멤버의 유저 아이디 입력
+			a=sc.nextLine();//삭제하고 싶은 멤버의 유저 아이디 입력
 			
 			//입력한 유저아이디에 해당하는 멤버 삭제
 			this.setConnection();
@@ -472,16 +511,3 @@ public void deleteMember() {
 		}	//while문 종료
 }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
