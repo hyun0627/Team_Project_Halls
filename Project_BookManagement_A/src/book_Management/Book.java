@@ -8,33 +8,38 @@ import java.sql.Statement;
 import java.util.Scanner;
 
 public class Book {
+	
 	public Scanner sc; // 스캐너 변수
 	private Test t1; // 유효성 검사를 하기 위한 Test클래스를 불러오기 위한 변수
 	public Connection dbconn; // DB연결하기 위한 변수
 	private int id; // book index
+	private String index; 
 	private String title; // 책 제목
 	private String isbn; // 책 일련번호
 	private int price; // 가격
+	private String pr; // 가격 유효성 검사를 위한 변수
 	private String publisher; // 출판사
 	private int pubyear; // 출판연도(PublisherYear)
 	private String author; // 저자
 	private int qty; // 책의 수량
 	private String bqty; // 수량 입력 후 int에 저장 전 유효성 검사를 하기 위한 변수
+	private String str; // 잡다한 것들 저장하기 위한 변수
 	
 	Book(){
+		
 		this.sc = new Scanner(System.in);
 		this.dbconn = null;
 		this.t1 = new Test();
+		
 	}
 	
 	// 작업선택 하는 메서드	
-	public void control() {
+	public void control() throws SQLException {
 		
 		while(true) {
 			System.out.print("작업 선택 [c:책 등록하기, r:책 리스트 보기, u:책 자료 수정하기, d:책 폐기하기, x:종료하기] : ");
 			String str = sc.nextLine();
 			// 입력값이 'x'이면 main 객체로 전환
-			if(t1.strTest(str)) break;
 			if(str.equals("x") || str.equals("X")) break;
 			
 			switch(str) {
@@ -54,21 +59,21 @@ public class Book {
 			// 입력값이 'd'이면 책 폐기 메소드 실행
 			case "d", "D":
 				this.deleteBook(); break;
-			}
-				
-		} // while문 종료	
+			}				
+		} // while문 종료
+		
 	}
 	
-	private void addBook() {
+	private void addBook() throws SQLException {
 		// 책 정보 추가 메소드
-		this.setConnection();
-		
+		this.setConnection();		
 		try {
 			String idsql = "select Max(id) from book";
 			Statement st = this.dbconn.createStatement();
 			ResultSet rs = st.executeQuery(idsql);
 			rs.next();
-			id = rs.getInt("Max(id)")+1;
+			id = rs.getInt("Max(id)");
+			id++;
 			rs.close();
 			st.close();
 			}catch(SQLException e) {
@@ -86,7 +91,7 @@ public class Book {
 			if(t1.strTest(isbn) == false) break;
 			
 			System.out.print("가격을 입력해주세요 [''입력시 종료]:");
-			String pr = sc.nextLine();
+			pr = sc.nextLine();
 			if(t1.isNumber(pr) == false) break;
 			price = Integer.parseInt(pr);
 			
@@ -97,6 +102,7 @@ public class Book {
 			System.out.print("출판연도를 입력해주세요 [''입력시 종료]: ");
 			String py = sc.nextLine();
 			if(t1.isNumber(py) == false) break;
+			pubyear = Integer.parseInt(py);
 			
 			System.out.print("저자를 입력해주세요 [''입력시 종료]: ");
 			author = sc.nextLine();
@@ -120,12 +126,11 @@ public class Book {
 				System.out.println("책 추가 중 오류 발생"+e.getMessage());
 			}
 			this.disConnection();
-			} //while문 종료
+		} //while문 종료
 		
-	}
-	
+	}	
 	//검색을 통해 책 리스트를 보게 하는 메서드
-	public void printBook() {
+	public void printBook() throws SQLException {
 
 		while(true) {
 			System.out.print("작업 선택 [e: 전체 보기 t:제목으로 찾기, a:저자명으로 찾기, p:출판사로 찾기, x:종료]: ");
@@ -143,10 +148,10 @@ public class Book {
 				this.Psearch(); break;		// 출판사로 검색 검색하는 메서드 호출
 			}				
 		}//while문 종료
-	}
-	
+		
+	}	
 	// 책 정보를 수정할 책을 선택하는 메서드 -> 어떤 책을 수정할 건지 선택	
-	public void updateBook() {
+	public void updateBook() throws SQLException {
 		
 		while(true) {			
 			System.out.print("  t : 수정할 책 제목으로 검색 \n  a : 수정할 책 저자명으로 검색 "
@@ -169,10 +174,10 @@ public class Book {
 				break;
 			}
 		}//while문 종료
-	}
-	
+		
+	}	
 	// 폐기할 책을 선택하는 메서드 -> 어떤 책을 폐기할 건지 선택
-	public void deleteBook() {
+	public void deleteBook() throws SQLException {
 		
 		while(true) {
 			System.out.print("  t : 삭제할 책 제목으로 검색 \n  a : 삭제할 책 저자명으로 검색 "
@@ -194,12 +199,13 @@ public class Book {
 				this.delAdd();  // 폐기 실행 메서드 호출
 				break;
 			}			
-		}//while문 종료					
+		}//while문 종료	
+		
 	}
 	
 	// 책 수정내용 입력 후 저장하는 메서드
-	// 책 정보를 수정시키는 실행시키는 메서드
-	public void upAdd() {	
+	public void upAdd() {
+		
 		while(true) {
 			System.out.print("수정할 책의 id를 입력해주세요 ['x'입력시 종료]: ");
 			String ID = sc.nextLine();
@@ -244,95 +250,131 @@ public class Book {
 			this.disConnection();
 			
 			// 수정할 내용 입력
-			System.out.print("새 제목을 입력하세요 ['' 입력 시 기존값 유지 / 'c' 입력 시 취소]: ");
-			title = sc.nextLine();
-			if (title.equals("c") || title.equals("C")) {
-				System.out.println("제목 수정을 취소합니다.");
-				break;
-			}
-			if (title.isEmpty()) title = oldT;
-
-			// 가격 유효성 검사 추가
-			int price = oldPr;
-			while (true) {
-				System.out.print("가격을 입력해주세요 ['' 입력 시 기존값 유지 / 'c' 입력 시 취소]: ");
-				String pr = sc.nextLine();
-				if (pr.equals("c") || pr.equals("C")) {
-					System.out.println("가격 변경을 취소합니다.");
+			System.out.print("제목 ['' 취소 / 'u' 기존 값 유지 / 'n'새 값 입력]: ");
+			str = sc.nextLine();
+			
+			if(t1.strTest(str) == false) {return;}	
+			
+			while(true) {
+				
+				if (str.equals("u") || str.equals("U")) { 			
+					title = oldT;
 					break;
+				}else if(str.equals("n") || str.equals("N")){
+					System.out.println("새 제목을 입력해주세요.");
+					title = sc.nextLine();
+					if(t1.strTest(title) == false) {break;}
+					break;
+				}else {
+					System.out.println("잘못 입력하셨습니다.");
+					str = sc.nextLine();
 				}
-				if (pr.isEmpty()) break;
-				try {
-					price = Integer.parseInt(pr);
-					if (price < 0) {
-						System.out.println("가격은 0(원)이상이어야 합니다.");
+			}
+			
+			// 가격 유효성 검사 추가	
+			while(true) {
+				System.out.print("가격 ['' 취소 / 'u' 기존 값 유지 / 'n'새 값 입력]: ");
+				str = sc.nextLine();
+				if(t1.strTest(str) == false) return;
+				
+				if(str.equals("n") || str.equals("N")) {
+					System.out.println("새 가격을 입력해주세요");
+					pr = sc.nextLine();
+					if(t1.isNumber(pr) == false) {
+						System.out.println("0(원) 이상의 올바른 가격을 입력해주세요.");
 						continue;
 					}
+					price=Integer.parseInt(pr);
 					break;
-				} catch (NumberFormatException e) {
-					System.out.println("숫자만 입력해주세요.");
+					
+				} else if (str.equals("u") || str.equals("U")) { 			
+					price = oldPr;
+					break;
+				}	
+				
+			}		
+			
+			// 출판사 입력
+			while(true) {
+				System.out.print("출판사 ['' 취소 / 'u' 기존 값 유지 / 'n'새 값 입력]: ");
+				str = sc.nextLine();
+				
+				if(t1.strTest(str) == false) return;	
+				
+				if (publisher.equals("u") || publisher.equals("U")) { 			
+					publisher = oldPs;
+					
+				} else if(publisher.equals("n") || publisher.equals("N")){
+					System.out.print("새 출판연도를 입력해주세요: ");
+					publisher = sc.nextLine();
+					if(t1.strTest(publisher) == false) break;
+					break;
+				} else {
+					System.out.println("잘못 입력하셨습니다");
 				}
 			}
-
-			// 출판사 입력
-			System.out.print("출판사를 입력해주세요 ['' 입력 시 기존값 유지 / 'c' 입력 시 취소]: ");
-			publisher = sc.nextLine();
-			if (publisher.equals("c") || publisher.equals("C")) {
-				System.out.println("출판사 수정을 취소합니다.");
-				break;
-			}
-			if (publisher.isEmpty()) publisher = oldPs;
 
 			// 출판연도 유효성 검사 추가
-			int pubyear = oldPy;
-			while (true) {
-				System.out.print("출판연도를 입력해주세요 ['' 입력 시 기존값 유지 / 'c' 입력 시 취소]: ");
-				String py = sc.nextLine();
-				if (py.equals("c") || py.equals("C")) {
-					System.out.println("출판연도 수정을 취소합니다.");
+			while(true) {
+				System.out.print("출판연도 ['' 취소 / 'u' 기존 값 유지 / 'n'새 값 입력]: ");
+				// py가 아니라 u나 n을 입력받는 거 변수 하나 만들어서 여기에 입력 받아야함
+				str = sc.nextLine();
+				if(t1.strTest(str) == false) return;
+						
+				if (str.equals("u") || str.equals("U")) { 			
+					pubyear = oldPy;
 					break;
-				}
-				if (py.isEmpty()) break;
-				try {
-					pubyear = Integer.parseInt(py);
-					if (pubyear < 1800 || pubyear > 2100) {
-						System.out.println("출판연도는 1800~2100 사이로 입력해주세요.");
+				}else if(str.equals("n") || str.equals("N")){
+					// 여기에서 출판연도를 입력받아야 함
+					System.out.print("새 출판연도를 입력해주세요 : ");
+					String py = sc.nextLine();
+					if(t1.isNumber(py) == false) {
+						System.out.println("올바른 출판연도를 입력해주세요.");
 						continue;
-					}
+					}	
+					pubyear=Integer.parseInt(py);
 					break;
-				} catch (NumberFormatException e) {
-					System.out.println("숫자만 입력해주세요.");
 				}
 			}
 
 			// 저자 입력
-			System.out.print("저자를 입력해주세요 ['' 입력 시 기존값 유지 / 'c' 입력 시 취소]: ");
-			author = sc.nextLine();
-			if (author.equals("c") || author.equals("C")) {
-				System.out.println("저자 수정을 취소합니다.");
-				break;
-			}
-			if (author.isEmpty()) author = oldA;
-
-			// 수량 유효성 검사 추가
-			int qty = oldQ;
-			while (true) { 
-				System.out.print("수량을 입력해주세요 ['' 입력 시 기존값 유지 / 'c' 입력 시 취소]: ");
-				String q = sc.nextLine();
-				if (q.equals("c") || q.equals("C")) {
-					System.out.println("수량 수정을 취소합니다.");
+			while(true) {
+				System.out.print("저자 ['' 취소 / 'u' 기존 값 유지 / 'n'새 값 입력]: ");
+				str = sc.nextLine();
+				if(t1.strTest(str) == false) {break;}
+				
+				if (str.equals("u") || str.equals("U")) { 			
+					author = oldA;
+					break;
+				} else if(str.equals("n") || str.equals("N")) {
+					System.out.println(" 새 저자를 입력해주세요.");
+					author = sc.nextLine();
+					if(t1.strTest(author) == false) break;
 					break;
 				}
-				if (q.isEmpty()) break;
-				try {
-					qty = Integer.parseInt(q);
-					if (qty < 0) {
-						System.out.println("수량은 0 이상이어야 합니다.");
-						continue;
-					}
+			}
+			
+			// 수량 유효성 검사 추가
+			while(true) {
+				System.out.print("수량을 입력해주세요 ['' 취소 / 'u' 기존 값 유지 / 'n'새 값 입력]: ");
+				str = sc.nextLine();
+				
+				if(t1.isNumber(str) == false) {
+					System.out.println("올바른 수량을 입력해주세요.");
+					continue;
+				}
+				if (str.equals("u") || str.equals("U")) { 			
+					qty = oldQ;
 					break;
-				} catch (NumberFormatException e) {
-					System.out.println("숫자만 입력해주세요.");
+				}else {
+					System.out.print("새 수량을 입력해주세요 : ");
+					bqty = sc.nextLine();
+					if(t1.isNumber(bqty) == false) {
+						System.out.println("올바른 수량을 입력해주세요.");
+						continue;
+					}	
+					qty=Integer.parseInt(bqty);
+					break;
 				}
 			}
 			
@@ -349,51 +391,64 @@ public class Book {
 				System.out.println("수정 중 오류 발생"+e.getMessage());
 			}
 			this.disConnection();
+			}//while문 종료
 		}
-	}
+	
+	
+	
 	
 	// 폐기할 책 입력 후 실행시키는 메서드
 	public void delAdd() {
+		
 		System.out.print("삭제할 책의 id 번호를 입력해주세요 : ");
-		id = sc.nextInt();			
+		index = sc.nextLine();
+		if(t1.isNumber(index) == false) return;
+		id = Integer.parseInt(index);
 		System.out.print("정말 삭제하시겠습니까[y/x]? : ");
 		String decide = sc.nextLine();
 		if(decide.equals("x")) {
 			System.out.println("삭제가 취소되었습니다.");
 			return;
+			
+		} else if(decide.equals("y")) {
+			this.setConnection();
+			try {
+				String sql = "delete from book where id="+id;
+				Statement st = this.dbconn.createStatement();
+				st.executeUpdate(sql);
+				st.close();
+				System.out.println("성공적으로 삭제되었습니다.");
+			}catch(SQLException e) {
+				System.out.println(e.getMessage());
+			}
+			this.disConnection();
+		}else {
+			System.out.println("잘못된 입력입니다. 다시 입력해주세요");
+			return;
 		}
 		
-		this.setConnection();
-		try {
-			String sql = "delete from book where id="+id;
-			Statement st = this.dbconn.createStatement();
-			st.executeUpdate(sql);
-			st.close();
-			System.out.println("성공적으로 삭제되었습니다.");
-		}catch(SQLException e) {
-			System.out.println(e.getMessage());
-		}
-		this.disConnection();
+		
 	}
 	
 	// 책 제목으로 검색하여 리스트를 출력하는 메서드
-	public void Tsearch() {
-		while(true) {
-			System.out.print("찾으실 책의 제목을 입력해주세요[''입력시 종료]: ");
-			String Tsearch = sc.nextLine();
-			if(Tsearch.equals("")) break;
-			
-			this.setConnection();
-			try {
-				Statement Tst = dbconn.createStatement();
-				String Tsql = "select id,title,isbn,price,publisher,pubyear,author,created,updated"+
-							  " from book where title like'"+Tsearch+"%' or title like '%"+
-							  Tsearch+"' or title like '%"+Tsearch+"%'";
-				ResultSet Trs = Tst.executeQuery(Tsql);
+	public void Tsearch() throws SQLException {
 				
+				System.out.print("찾으실 책의 제목을 입력해주세요[''입력시 종료]: ");
+				String Tsearch = sc.nextLine();
+				if(Tsearch.equals("")) return;
+			
+				this.setConnection();
+		
+				Statement Tst = dbconn.createStatement();
+				String Tsql = "select id,title,isbn,price,publisher,pubyear,author,qty,created,updated"+
+								" from book where title like'"+Tsearch+"%' or title like '%"+
+								Tsearch+"' or title like '%"+Tsearch+"%'";
+				ResultSet Trs = Tst.executeQuery(Tsql);
+			
 				boolean search = false;  // 검색된 책이 있는지 체크하는 변수
 				while(Trs.next()) {
 					search = true;
+					
 					System.out.println("id:"+Trs.getInt("id")+" 제목:"+Trs.getString("title")+" isbn:"+Trs.getString("isbn")
 									 +" 가격:"+Trs.getInt("price")+" 출판사:"+Trs.getString("publisher")
 									 +" 출판연도:"+Trs.getInt("pubyear")+" 저자:"+Trs.getString("author")+" 수량:"+Trs.getInt("qty")
@@ -405,24 +460,21 @@ public class Book {
 				
 				Trs.close();
 				Tst.close();
-			}catch(SQLException e) {
-				System.out.println(e.getMessage());
-			}
-			this.disConnection();		
-		}
+
+			this.disConnection();		    
 	}
 	
 	// 책 저자명으로 검색하여 리스트를 출력하는 메서드
 	public void Asearch() {
-		while(true) {
+
 			System.out.print("찾으실 책의 저자를 입력해주세요[''입력시 종료]: ");
 			String Asearch = sc.nextLine();
-			if(Asearch.equals("")) break;
+			if(Asearch.equals("")) return;
 			
 			this.setConnection();
 			try {
 				Statement Ast = dbconn.createStatement();
-				String Asql = "select id,title,isbn,price,publisher,pubyear,author,created,updated"+
+				String Asql = "select id,title,isbn,price,publisher,pubyear,author,qty,created,updated"+
 							  " from book where author like'"+Asearch+"%' or author like '%"+
 							  Asearch+"' or author like '%"+Asearch+"%'";
 				ResultSet Ars = Ast.executeQuery(Asql);
@@ -445,20 +497,19 @@ public class Book {
 				System.out.println(e.getMessage());
 			}
 			this.disConnection();		
-		}
 	}
 	
 	// 책 출판사로 검색하여 리스트를 출력하는 메서드
 	public void Psearch() {
-		while(true) {
+
 			System.out.print("찾으실 책의 출판사를 입력해주세요[''입력시 종료]: ");
 			String Psearch = sc.nextLine();
-			if(Psearch.equals("")) break;
+			if(Psearch.equals("")) return;
 			
 			this.setConnection();
 			try {
 				Statement Pst = dbconn.createStatement();
-				String Psql = "select id,title,isbn,price,publisher,pubyear,author,created,updated"+
+				String Psql = "select id,title,isbn,price,publisher,pubyear,author,qty,created,updated"+
 							  " from book where publisher like'"+Psearch+"%' or publisher like '%"+
 							  Psearch+"' or publisher like '%"+Psearch+"%'";
 				ResultSet Prs = Pst.executeQuery(Psql);
@@ -481,7 +532,6 @@ public class Book {
 				System.out.println(e.getMessage());
 			}
 			this.disConnection();		
-		}
 	}
 	
 	// 모든 책 리스트를 출력하는 메서드
@@ -489,7 +539,7 @@ public class Book {
 		this.setConnection();
 		try {
 			Statement Est = dbconn.createStatement();
-			String Esql = "select id,title,isbn,price,publisher,pubyear,author,created,updated"+
+			String Esql = "select id,title,isbn,price,publisher,pubyear,author,qty,created,updated"+
 						  " from book order by id";
 			ResultSet Ers = Est.executeQuery(Esql);
 			
@@ -511,13 +561,14 @@ public class Book {
 	//DB 연결하는 메서드
 	public void setConnection(){
 		String dbDriver = "com.mysql.cj.jdbc.Driver";
-		String dbUrl = "jdbc:mysql://127.0.0.1:3306/project";
-		String dbUser = "root";
-		String dbPassword = "himedia";
+		String dbUrl = "jdbc:mysql://192.168.0.24:3306/project";
+		String dbUser = "gb";
+		String dbPassword = "0627";
 		
 		try {
 			Class.forName(dbDriver);
 			this.dbconn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+			this.dbconn.setAutoCommit(false);
 		    }catch(SQLException e) {
 				System.out.println("DB Connection [실패]");
 				e.printStackTrace();
