@@ -202,7 +202,7 @@ public class Member {
 	// 이름으로 검색한 Member 리스트 출력하는 메서드
 	public void nSearch() {
 		while(true) {
-			System.out.print("찾으실 책의 제목을 입력해주세요[''입력시 종료]: ");
+			System.out.print("유저의 이름을 입력해주세요[''입력시 종료]: ");
 			pname = st.nextLine();
 			if(t1.strTest(pname) == false) break;
 			
@@ -246,7 +246,7 @@ public class Member {
 					System.out.println(rs.getString("pname")+", "+rs.getString("userid")+", "+
 							  	 	  rs.getString("gender")+", "+rs.getString("mobile")+", "+
 							  	 	  rs.getString("pw")+", "+rs.getString("created")+", "+rs.getString("updated"));
-				}
+				} 
 				rs.close(); 
 				st.close();
 			}catch(SQLException e) {
