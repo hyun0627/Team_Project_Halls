@@ -20,8 +20,11 @@
 	 - Book클래스 -> bo
 	 - Member클래스 -> mem
 	 - Test클래스 -> t1
+     
     1-2. 스캐너
+     
     1-3. 메소드에서 여러번 쓰는 변수 같은 경우
+    
 	 ex) Book클래스
 	 - id, title, isbn, price,..., 등등
 
